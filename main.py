@@ -2,9 +2,6 @@ import os
 import random
 import pygame
 
-# ======================
-# 초기화
-# ======================
 pygame.init()
 pygame.mixer.init()
 
@@ -26,15 +23,15 @@ def load_img(name: str, size=None):
         img = pygame.transform.smoothscale(img, size)
     return img
 
-# 폰트
+# 폰트 ( 나눔고딕으로 ㄱㄱ )
 kfont_path = os.path.join(ASSETS_DIR, "NanumGothic.ttf")
 title_font = pygame.font.Font(kfont_path, 86)
 big_font   = pygame.font.Font(kfont_path, 44)
 font       = pygame.font.Font(kfont_path, 28)
 
-# ======================
-# 사운드 로드
-# ======================
+
+# 사운드 
+
 def play_bgm(filename, volume=0.5):
     path = asset_path(filename)
     if os.path.exists(path):
@@ -51,9 +48,9 @@ if os.path.exists(damage_path):
     except pygame.error:
         damage_sound = None
 
-# ======================
-# UI (버튼/팝업)
-# ======================
+
+# UI (버튼/팝업) 이미지는 사용 안했삼
+
 class Button:
     def __init__(self, rect, text):
         self.rect = pygame.Rect(rect)
@@ -74,7 +71,7 @@ class Button:
         return mouse_down and self.rect.collidepoint(mouse_pos)
 
 def draw_dim_popup(surf, title, lines):
-    # 반투명 배경
+    # 배경 반투명
     overlay = pygame.Surface((W, H), pygame.SRCALPHA)
     overlay.fill((0, 0, 0, 160))
     surf.blit(overlay, (0, 0))
@@ -95,13 +92,13 @@ def draw_dim_popup(surf, title, lines):
         surf.blit(text_surf, (box.x + 24, y))
         y += 34
 
-    # 닫기 안내
+    # 닫기 
     hint = font.render("ESC 또는 아무 곳 클릭: 닫기", True, (200, 200, 200))
     surf.blit(hint, (box.x + 24, box.y + box.height - 40))
 
-# ======================
-# 전투 배경 (도트 느낌 다리)
-# ======================
+
+# 전투 배경 (은빛산 배경, 티만 나게)
+
 def draw_bridge_background(surface):
     surface.fill((10, 10, 18))
 
@@ -138,19 +135,19 @@ def hit_circle(ax, ay, ar, bx, by, br):
     dy = ay - by
     return dx*dx + dy*dy <= (ar + br) * (ar + br)
 
-# ======================
-# 전투(게임) 루프 함수
-# ======================
+
+# 루프 함수 (게임
+
 def run_battle():
     # 이미지 로드
     player_img = load_img("black.png", size=(64, 64))
     boss_img   = load_img("pika.png",  size=(96, 96))
 
-    # 히트박스: 이미지에 맞춘 원형(“그림이랑 똑같게” 느낌)
+    # 히트박스
     player_hit_r = min(player_img.get_width(), player_img.get_height()) // 2
     boss_r       = min(boss_img.get_width(), boss_img.get_height()) // 2
 
-    # 전투 BGM 시작
+    # BGM 시작
     play_bgm("battle_bgm.mp3", volume=0.5)
 
     # 플레이어
@@ -345,7 +342,7 @@ def run_battle():
         for pb in player_bullets:
             pygame.draw.circle(screen, (255, 160, 40), (int(pb[0]), int(pb[1])), PLAYER_BULLET_R)
 
-        # 플레이어(무적 깜빡임)
+        # 플레이어 깜빡이면서 무적
         blink_off = (invuln > 0) and ((invuln // 5) % 2 == 0)
         if not blink_off:
             screen.blit(player_img, player_img.get_rect(center=(int(px), int(py))))
@@ -361,9 +358,9 @@ def run_battle():
         pygame.display.flip()
         clock.tick(FPS)
 
-# ======================
+
 # 타이틀 화면
-# ======================
+
 def run_title():
     # 타이틀 BGM 시작
     play_bgm("start.mp3", volume=0.55)
@@ -393,7 +390,7 @@ def run_title():
 
         mouse_pos = pygame.mouse.get_pos()
 
-        # 배경(타이틀용: 어두운 그라데이션 느낌)
+        # 배경 (타이틀 배경, 그냥 어둡게만)
         screen.fill((10, 10, 18))
         pygame.draw.circle(screen, (25, 25, 40), (120, 90), 140)
         pygame.draw.circle(screen, (18, 18, 30), (680, 520), 200)
@@ -416,18 +413,18 @@ def run_title():
             if btn_help.is_clicked(mouse_pos, mouse_down):
                 show_help = True
         else:
-            # 도움말 팝업 표시
+            # 도움말 팝업
             draw_dim_popup(screen, "게임 방법", help_lines)
-            # 팝업 떠 있을 때 클릭하면 닫기
+            # 클릭시 닫는거
             if mouse_down:
                 show_help = False
 
         pygame.display.flip()
         clock.tick(FPS)
 
-# ======================
-# 메인 상태 머신
-# ======================
+
+# 메인 타이틀 마무리
+
 state = "title"
 while True:
     if state == "title":
